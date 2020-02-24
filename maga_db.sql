@@ -3,7 +3,7 @@ USE maga_db;
 
 CREATE TABLE IF NOT EXISTS user_credentials (
 	email varchar(100) NOT NULL,
-    password_hash varchar(200) NOT NULL
+    password_hash varchar(300) NOT NULL
 );
 ALTER TABLE user_credentials ADD PRIMARY KEY (email);
 

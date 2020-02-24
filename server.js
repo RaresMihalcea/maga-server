@@ -24,11 +24,12 @@ var con = mysql.createConnection({
     password: "Atlantykron",
     database: "maga_db"
 });
+console.log("Connected to mysql!");
 
-con.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected to mysql!");
-});
+// con.connect(function(err) {
+//     if (err) throw err;
+//     console.log("Connected to mysql!");
+// });
 
 var app = express();
 app.use(logger('dev'));
@@ -48,6 +49,8 @@ app.get('/hello', function (req, res) {
 });
 
 app.post('/registration', function (req, res) {
+    console.log("\n");
+
     // Get post params
     var email = req.body.email,
         password = req.body.password;
@@ -56,32 +59,45 @@ app.post('/registration', function (req, res) {
     console.log("Password is ", password);
 
     // Hash the password to store in DB
-    var pass_sha = sha256.create();
-    pass_sha.update(password);
-    pass_sha.hex();    
+    var pass_sha = sha256(password);
+    console.log("Hashed password is ", pass_sha);  
+        
+    var ok = 1;
+    // Check if email exists
+    con.query(`SELECT email FROM user_credentials`, function (err, rows, fields) {
+        if (err) {
+            console.error("Error in SELECT: ", err);
+            throw err;
+        }
 
-    con.connect(function(err) {
-        if (err) throw err;
-        // Check if email exists
-        con.query("SELECT email FROM user_credentials", function (err, result, fields) {
-            if (err) throw err;
-            var ok = 1;
-            for (var key in result) {
-                var value = result[key];
-                if (value === email) {
-                    console.log("User already exists!");
-                    ok = 0;
-                    break;
-                }
+        for (var key in rows) {
+            var value = rows[key];
+            console.log("email = " + value.email);
+            if (value.email === email) {
+                console.log("User already exists!");
+                console.log("ok == ", ok);
+                ok = 0;
+                console.log("ok ==== ", ok);
+                break;
             }
-        });
-        // Insert into DB
-        if (ok == 1) {
-            var sql = "INSERT INTO user_credentials (email, password_hash) VALUES (`$email`, `$pass_sha`)";
-            con.query(sql, function (err, result) {
-                if (err) throw err;
-                console.log("1 record inserted");
-            });
         }
     });
+    if (ok == 0) {
+        res.send("User already exists!");
+    }
+    console.log("PULAPULAPULA");
+    console.log("ok = ", ok);
+    // Insert into DB
+    if (ok == 1) {
+        var sql = `INSERT INTO user_credentials SET email = ?, password_hash = ?`;
+        var values = [email, pass_sha];
+        con.query(sql, values, function (err, results) {
+            if (err) {
+                console.error("Error in INSERT: ", err);
+                throw err;
+            }
+            console.log("Records inserted: " + results.affectedRows);
+            res.send('User added.')
+        });
+    }
 });
