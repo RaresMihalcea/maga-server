@@ -5,6 +5,7 @@ var methodOverride = require('method-override')
 var cors = require('cors');
 var mysql = require('mysql');
 var sha256 = require('js-sha256');
+var Promise = require('promise');
 
 var whitelist = ['http://localhost:4200']
 var corsOptions = {
@@ -63,41 +64,51 @@ app.post('/registration', function (req, res) {
     console.log("Hashed password is ", pass_sha);  
         
     var ok = 1;
-    // Check if email exists
-    con.query(`SELECT email FROM user_credentials`, function (err, rows, fields) {
-        if (err) {
-            console.error("Error in SELECT: ", err);
-            throw err;
-        }
-
-        for (var key in rows) {
-            var value = rows[key];
-            console.log("email = " + value.email);
-            if (value.email === email) {
-                console.log("User already exists!");
-                console.log("ok == ", ok);
-                ok = 0;
-                console.log("ok ==== ", ok);
-                break;
-            }
-        }
-    });
-    if (ok == 0) {
-        res.send("User already exists!");
-    }
-    console.log("PULAPULAPULA");
-    console.log("ok = ", ok);
-    // Insert into DB
-    if (ok == 1) {
-        var sql = `INSERT INTO user_credentials SET email = ?, password_hash = ?`;
-        var values = [email, pass_sha];
-        con.query(sql, values, function (err, results) {
+    
+    let promise = new Promise(function(resolve, reject) {
+        // Check if email exists
+        con.query(`SELECT email FROM user_credentials`, function (err, rows, fields) {
             if (err) {
-                console.error("Error in INSERT: ", err);
-                throw err;
+                reject(err);
             }
-            console.log("Records inserted: " + results.affectedRows);
-            res.send('User added.')
+
+            for (var key in rows) {
+                var value = rows[key];
+                console.log("email = " + value.email);
+                if (value.email === email) {
+                    console.log("User already exists!");
+                    console.log("ok == ", ok);
+                    ok = 0;
+                    console.log("ok ==== ", ok);
+                    break;
+                }
+            }
+            resolve(ok);
         });
-    }
+    });
+    
+    promise.then(function(ok) {
+        if (ok == 0) {
+            res.send("User already exists!");
+        }
+        console.log("PULAPULAPULA");
+        console.log("ok = ", ok);
+        // Insert into DB
+        if (ok == 1) {
+            var sql = `INSERT INTO user_credentials SET email = ?, password_hash = ?`;
+            var values = [email, pass_sha];
+            con.query(sql, values, function (err, results) {
+                if (err) {
+                    console.error("Error in INSERT: ", err);
+                    throw err;
+                }
+                console.log("Records inserted: " + results.affectedRows);
+                res.send('User added.')
+            });
+        }
+    }, function(err) {
+        console.error("Error in SELECT: ", err);
+        throw err;
+    });
+    
 });
