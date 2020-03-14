@@ -76,10 +76,7 @@ app.post('/registration', function (req, res) {
                 var value = rows[key];
                 console.log("email = " + value.email);
                 if (value.email === email) {
-                    console.log("User already exists!");
-                    console.log("ok == ", ok);
                     ok = 0;
-                    console.log("ok ==== ", ok);
                     break;
                 }
             }
@@ -91,8 +88,7 @@ app.post('/registration', function (req, res) {
         if (ok == 0) {
             res.send("User already exists!");
         }
-        console.log("PULAPULAPULA");
-        console.log("ok = ", ok);
+        
         // Insert into DB
         if (ok == 1) {
             var sql = `INSERT INTO user_credentials SET email = ?, password_hash = ?`;
@@ -103,12 +99,51 @@ app.post('/registration', function (req, res) {
                     throw err;
                 }
                 console.log("Records inserted: " + results.affectedRows);
-                res.send('User added.')
+                res.send('User added.');
             });
         }
     }, function(err) {
         console.error("Error in SELECT: ", err);
         throw err;
     });
-    
+});
+
+app.post('/login', function (req, res) {
+    console.log("\n");
+
+    // Get post params
+    var email = req.body.email,
+        password = req.body.password;
+
+    console.log("Email is ", email);
+    console.log("Password is ", password);
+
+    // Hash the password to search in DB
+    var pass_sha = sha256(password);
+    console.log("Hashed password is ", pass_sha);  
+
+    var found = false;
+
+    // Check if email exists
+    con.query(`SELECT email, password_hash FROM user_credentials`, function (err, rows, fields) {
+        if (err) {
+            console.error("Error in SELECT: ", err);
+            throw err;
+        }
+
+        for (var key in rows) {
+            var value = rows[key];
+            console.log("email = " + value.email);
+            console.log("pass_hash = " + value.password_hash);
+            if (value.email === email && value.password_hash === pass_sha) {
+                found = true;
+                res.send('Login successful!');
+                break;
+            }
+        }
+
+        if (found == false) {
+            res.send('User not found.');
+        }
+    });
 });
