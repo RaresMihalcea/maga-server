@@ -44,7 +44,6 @@ app.listen(process.env.PORT || 8080);
 console.log('Listening on port 8080');
 
 app.get('/hello', function (req, res) {
-
     res.send({ message: "Hello Atlantykron" })
 
 });
