@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var logger = require('morgan');
 var methodOverride = require('method-override')
 var cors = require('cors');
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var sha256 = require('js-sha256');
 var Promise = require('promise');
 
@@ -20,7 +20,7 @@ var corsOptions = {
 
 // Connect to DB
 var con = mysql.createConnection({
-    host: "localhost",
+    host: "maga-db",
     user: "root",
     password: "Atlantykron",
     database: "maga_db"
@@ -45,7 +45,6 @@ console.log('Listening on port 8080');
 
 app.get('/hello', function (req, res) {
     res.send({ message: "Hello Atlantykron" })
-
 });
 
 app.post('/registration', function (req, res) {
