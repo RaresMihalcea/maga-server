@@ -2,22 +2,32 @@
   "name": "server",
   "version": "1.0.0",
   "description": "Atlantykron Hybrid App Server",
-  "main": "server.js",
+  "main": "src/main.js",
   "scripts": {
+    "start": "node server",
+    "dev": "nodemon server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "del": "^5.1.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-flash": "^0.0.2",
+    "express-session": "^1.17.1",
     "js-sha256": "^0.9.0",
     "method-override": "^3.0.0",
     "morgan": "^1.9.1",
     "mysql": "^2.18.0",
-    "nodemon": "^2.0.2",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
     "promise": "^8.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
