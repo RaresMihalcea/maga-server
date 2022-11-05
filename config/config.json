@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "Atlantykron",
+    "database": "maga-db",
+    "host": "maga-db",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "Atlantykron",
+    "database": "maga-db",
+    "host": "maga-db",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "Atlantykron",
+    "database": "maga-db",
+    "host": "maga-db",
+    "dialect": "mysql"
+  }
+}
