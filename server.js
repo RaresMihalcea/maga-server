@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const cors = require('cors')
 
-const db = require("./models")
+// firebase.initializeApp(env.firebaseConfig)
 
 const notFoundMiddleware = require('./middleware/not-found')
 const errorMiddleware = require('./middleware/error-handler')
@@ -30,20 +30,21 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride())
 app.use(cors(corsOptions))
 
-app.use(notFoundMiddleware)
-app.use(errorMiddleware)
+// app.use(notFoundMiddleware)
+// app.use(errorMiddleware)
 
 // start
 const port = process.env.PORT || 8080
 
+app.get('/hello', function (req, res) {
+    console.log(req.query.token)
+    res.send(req.query.token)
+});
+
 const start = async () => {
     try {
-        // await connectDB()
-        db.sequelize.sync().then((req) => {
-            console.log('Connected to sequelize!')
-            app.listen(port, () => {
-                console.log(`Server is listening on port ${port}...`)
-            })
+        app.listen(port, () => {
+            console.log(`Server is listening on port ${port}...`)
         })
     } catch (error) {
         console.log(error)
@@ -52,9 +53,7 @@ const start = async () => {
   
 start()
 
-// app.get('/hello', function (req, res) {
-//     res.send({ message: "Hello Atlantykron" })
-// });
+
 
 // app.post('/registration', function (req, res) {
 //     console.log("\n");
@@ -154,3 +153,26 @@ start()
 //         }
 //     });
 // });
+
+
+// // Import the functions you need from the SDKs you need
+// import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
+// // TODO: Add SDKs for Firebase products that you want to use
+// // https://firebase.google.com/docs/web/setup#available-libraries
+
+// // Your web app's Firebase configuration
+// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// const firebaseConfig = {
+//   apiKey: "AIzaSyCfmI5Wi9fRxp5UHBXxAkNMEDmxZmxcQeA",
+//   authDomain: "atlantykron-5c3aa.firebaseapp.com",
+//   projectId: "atlantykron-5c3aa",
+//   storageBucket: "atlantykron-5c3aa.appspot.com",
+//   messagingSenderId: "650720911251",
+//   appId: "1:650720911251:web:c1a510762e050119429266",
+//   measurementId: "G-XZ8J3XE3E5"
+// };
+
+// // Initialize Firebase
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
