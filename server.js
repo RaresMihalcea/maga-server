@@ -3,10 +3,9 @@ const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const cors = require('cors')
 
-// firebase.initializeApp(env.firebaseConfig)
+const contactRouter = require('./routes/contact')
 
-const notFoundMiddleware = require('./middleware/not-found')
-const errorMiddleware = require('./middleware/error-handler')
+const errorHandlerMiddleware = require('./middleware/error-handler')
 
 // limit possible requests to angular app port and mobile phones
 const whitelist = ['http://localhost:4200']
@@ -23,15 +22,15 @@ const corsOptions = {
 const app = express()
 
 //middleware
-
 app.use(express.json())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride())
 app.use(cors(corsOptions))
+app.use(errorHandlerMiddleware)
 
-// app.use(notFoundMiddleware)
-// app.use(errorMiddleware)
+// routes
+app.use('/api/v1/contact', contactRouter)
 
 // start
 const port = process.env.PORT || 8080
@@ -52,8 +51,6 @@ const start = async () => {
 }
   
 start()
-
-
 
 // app.post('/registration', function (req, res) {
 //     console.log("\n");
